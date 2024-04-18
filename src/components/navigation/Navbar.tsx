@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const { isAuthenticated, getIdTokenClaims, logout } = useAuth0();
@@ -37,7 +38,10 @@ export const Navbar = () => {
         <img
           src="https://assets-global.website-files.com/62d7c8cb6f11a35f47072653/650a327aee4574b4afe11724_Develop%20for%20Good%20Logo-p-500.png"
           alt="develop for good engineering"
-          className="h-[60%] ml-[1.5rem]"
+          className="h-[60%] ml-[1.5rem] cursor-pointer"
+          onClick={() =>
+            (window.location.href = window.location.origin + "/dashboard")
+          }
         />
         {isAuthenticated && (
           <div className="ml-auto mr-[1.5rem]">

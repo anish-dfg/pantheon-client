@@ -1,4 +1,6 @@
 import { Button } from "~/components/ui/button";
+import { AiOutlinePlus } from "react-icons/ai";
+import { CiSquarePlus } from "react-icons/ci";
 import { BsDatabaseFillAdd } from "react-icons/bs";
 import {
   Card,
@@ -38,6 +40,7 @@ import { Base, AirtableBaseSchema, View } from "./airtable";
 import { useState } from "react";
 import { useToast } from "~/components/ui/use-toast";
 import { ToastAction } from "~/components/ui/toast";
+import { useNavigate } from "react-router-dom";
 
 const FormSchema = z.object({
   name: z.string(),
@@ -73,6 +76,7 @@ export const CreateDatabaseCard = () => {
     },
   });
 
+  const navigate = useNavigate();
   const { isPending, data, error } = useQuery({
     queryKey: ["schema"],
     queryFn: async () => {
@@ -128,9 +132,16 @@ export const CreateDatabaseCard = () => {
     }
   };
 
+  const handleClick = () => {
+    navigate("/datasource/configure");
+  };
+
   return (
     <div>
-      <Card className="flex flex-col w-[350px]">
+      <Card
+        className="flex flex-col cursor-pointer w-[350px]"
+        onClick={handleClick}
+      >
         <CardHeader>
           <CardTitle className="flex gap-2 items-center">
             <BsDatabaseFillAdd fontSize="1.5rem" />
@@ -141,203 +152,205 @@ export const CreateDatabaseCard = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form className="flex flex-col">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="my-[0.5rem]">
-                    <FormLabel>Name</FormLabel>
-                    <Input onChange={field.onChange} />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="my-[0.5rem]">
-                    <FormLabel>Description</FormLabel>
-                    <Input onChange={field.onChange} />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="datasource"
-                render={({ field }) => (
-                  <FormItem className="my-[0.5rem]">
-                    <FormLabel>Datasource</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue="">
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a datasource" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="airtable">Airtable</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="mr-auto mt-[0.5rem]"
-                    disabled={!form.getValues().datasource}
-                  >
-                    Configure
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 bg-white ml-[1rem]">
-                  <div className="space-y-2">
-                    <h4 className="font-medium leading-none">Airtable</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Configure an Airtable View
-                    </p>
-                  </div>
-                  <div>
-                    <Form {...airtableForm}>
-                      <FormField
-                        control={airtableForm.control}
-                        name="base"
-                        render={({ field }) => (
-                          <FormItem className="my-[0.5rem]">
-                            <FormLabel>Base</FormLabel>
-                            <Select
-                              onValueChange={(value) => {
-                                console.log(value);
-                                field.onChange(value);
-                              }}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a base" />
-                                <SelectContent className="bg-white">
-                                  <SelectGroup>
-                                    {fetchBaseDataError ? (
-                                      <span>Error</span>
-                                    ) : isBaseDataPending ? (
-                                      <span>Loading...</span>
-                                    ) : (
-                                      baseData?.map((base) => (
-                                        <SelectItem
-                                          value={base.id}
-                                          key={base.id}
-                                        >
-                                          {base.name}
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </SelectTrigger>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={airtableForm.control}
-                        name="table"
-                        render={({ field }) => (
-                          <FormItem className="my-[0.5rem]">
-                            <FormLabel>Table</FormLabel>
-                            <Select
-                              onValueChange={(value) => {
-                                console.log(value);
-                                field.onChange(value);
-                                const tableViews = data?.tables?.find(
-                                  (table) => table.id === value,
-                                )?.views;
-                                setViews(() => tableViews || []);
-                              }}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a table" />
-                                <SelectContent className="bg-white">
-                                  <SelectGroup>
-                                    {error ? (
-                                      <span>Error</span>
-                                    ) : isPending ? (
-                                      <span>Loading...</span>
-                                    ) : (
-                                      data?.tables.map((table) => (
-                                        <SelectItem
-                                          value={table.id}
-                                          key={table.id}
-                                        >
-                                          {table.name}
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </SelectTrigger>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={airtableForm.control}
-                        name="view"
-                        render={({ field }) => (
-                          <FormItem className="my-[0.5rem]">
-                            <FormLabel>View</FormLabel>
-                            <Select
-                              onValueChange={(value) => {
-                                console.log(value);
-                                field.onChange(value);
-                              }}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a table" />
-                                <SelectContent className="bg-white">
-                                  <SelectGroup>
-                                    {error ? (
-                                      <span>Error</span>
-                                    ) : isPending ? (
-                                      <span>Loading...</span>
-                                    ) : (
-                                      views.length > 0 &&
-                                      views.map((view) => (
-                                        <SelectItem
-                                          key={view.id}
-                                          value={view.id}
-                                        >
-                                          {view.name}
-                                        </SelectItem>
-                                      ))
-                                    )}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </SelectTrigger>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button
-                        type="submit"
-                        disabled={!createEnabled()}
-                        onClick={() => {
-                          handleCreateDatasource();
-                        }}
-                      >
-                        Create
-                      </Button>
-                    </Form>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </form>
-          </Form>
+          {/* <Form {...form}> */}
+          {/*   <form className="flex flex-col"> */}
+          {/*     <FormField */}
+          {/*       control={form.control} */}
+          {/*       name="name" */}
+          {/*       render={({ field }) => ( */}
+          {/*         <FormItem className="my-[0.5rem]"> */}
+          {/*           <FormLabel>Name</FormLabel> */}
+          {/*           <Input onChange={field.onChange} /> */}
+          {/*         </FormItem> */}
+          {/*       )} */}
+          {/*     /> */}
+          {/*     <FormField */}
+          {/*       control={form.control} */}
+          {/*       name="description" */}
+          {/*       render={({ field }) => ( */}
+          {/*         <FormItem className="my-[0.5rem]"> */}
+          {/*           <FormLabel>Description</FormLabel> */}
+          {/*           <Input onChange={field.onChange} /> */}
+          {/*         </FormItem> */}
+          {/*       )} */}
+          {/*     /> */}
+          {/**/}
+          {/*     <FormField */}
+          {/*       control={form.control} */}
+          {/*       name="datasource" */}
+          {/*       render={({ field }) => ( */}
+          {/*         <FormItem className="my-[0.5rem]"> */}
+          {/*           <FormLabel>Datasource</FormLabel> */}
+          {/*           <Select onValueChange={field.onChange} defaultValue=""> */}
+          {/*             <FormControl> */}
+          {/*               <SelectTrigger> */}
+          {/*                 <SelectValue placeholder="Select a datasource" /> */}
+          {/*               </SelectTrigger> */}
+          {/*             </FormControl> */}
+          {/*             <SelectContent className="bg-white"> */}
+          {/*               <SelectItem value="airtable">Airtable</SelectItem> */}
+          {/*             </SelectContent> */}
+          {/*           </Select> */}
+          {/*         </FormItem> */}
+          {/*       )} */}
+          {/*     /> */}
+          {/**/}
+          {/*     <Popover> */}
+          {/*       <PopoverTrigger asChild> */}
+          {/*         <Button */}
+          {/*           variant="outline" */}
+          {/*           className="mr-auto mt-[0.5rem]" */}
+          {/*           disabled={!form.getValues().datasource} */}
+          {/*         > */}
+          {/*           Configure */}
+          {/*         </Button> */}
+          {/*       </PopoverTrigger> */}
+          {/*       <PopoverContent className="w-80 bg-white ml-[1rem]"> */}
+          {/*         <div className="space-y-2"> */}
+          {/*           <h4 className="font-medium leading-none">Airtable</h4> */}
+          {/*           <p className="text-sm text-muted-foreground"> */}
+          {/*             Configure an Airtable View */}
+          {/*           </p> */}
+          {/*         </div> */}
+          {/*         <div> */}
+          {/*           <Form {...airtableForm}> */}
+          {/*             <FormField */}
+          {/*               control={airtableForm.control} */}
+          {/*               name="base" */}
+          {/*               render={({ field }) => ( */}
+          {/*                 <FormItem className="my-[0.5rem]"> */}
+          {/*                   <FormLabel>Base</FormLabel> */}
+          {/*                   <Select */}
+          {/*                     onValueChange={(value) => { */}
+          {/*                       console.log(value); */}
+          {/*                       field.onChange(value); */}
+          {/*                     }} */}
+          {/*                     defaultValue={field.value} */}
+          {/*                   > */}
+          {/*                     <SelectTrigger> */}
+          {/*                       <SelectValue placeholder="Select a base" /> */}
+          {/*                       <SelectContent className="bg-white"> */}
+          {/*                         <SelectGroup> */}
+          {/*                           {fetchBaseDataError ? ( */}
+          {/*                             <span>Error</span> */}
+          {/*                           ) : isBaseDataPending ? ( */}
+          {/*                             <span>Loading...</span> */}
+          {/*                           ) : ( */}
+          {/*                             baseData?.map((base) => ( */}
+          {/*                               <SelectItem */}
+          {/*                                 value={base.id} */}
+          {/*                                 key={base.id} */}
+          {/*                               > */}
+          {/*                                 {base.name} */}
+          {/*                               </SelectItem> */}
+          {/*                             )) */}
+          {/*                           )} */}
+          {/*                         </SelectGroup> */}
+          {/*                       </SelectContent> */}
+          {/*                     </SelectTrigger> */}
+          {/*                   </Select> */}
+          {/*                 </FormItem> */}
+          {/*               )} */}
+          {/*             /> */}
+          {/*             <FormField */}
+          {/*               control={airtableForm.control} */}
+          {/*               name="table" */}
+          {/*               render={({ field }) => ( */}
+          {/*                 <FormItem className="my-[0.5rem]"> */}
+          {/*                   <FormLabel>Table</FormLabel> */}
+          {/*                   <Select */}
+          {/*                     onValueChange={(value) => { */}
+          {/*                       console.log(value); */}
+          {/*                       field.onChange(value); */}
+          {/*                       const tableViews = data?.tables?.find( */}
+          {/*                         (table) => table.id === value, */}
+          {/*                       )?.views; */}
+          {/*                       setViews(() => tableViews || []); */}
+          {/*                     }} */}
+          {/*                     defaultValue={field.value} */}
+          {/*                   > */}
+          {/*                     <SelectTrigger> */}
+          {/*                       <SelectValue placeholder="Select a table" /> */}
+          {/*                       <SelectContent className="bg-white"> */}
+          {/*                         <SelectGroup> */}
+          {/*                           {error ? ( */}
+          {/*                             <span>Error</span> */}
+          {/*                           ) : isPending ? ( */}
+          {/*                             <span>Loading...</span> */}
+          {/*                           ) : ( */}
+          {/*                             data?.tables.map((table) => ( */}
+          {/*                               <SelectItem */}
+          {/*                                 value={table.id} */}
+          {/*                                 key={table.id} */}
+          {/*                               > */}
+          {/*                                 {table.name} */}
+          {/*                               </SelectItem> */}
+          {/*                             )) */}
+          {/*                           )} */}
+          {/*                         </SelectGroup> */}
+          {/*                       </SelectContent> */}
+          {/*                     </SelectTrigger> */}
+          {/*                   </Select> */}
+          {/*                 </FormItem> */}
+          {/*               )} */}
+          {/*             /> */}
+          {/*             <FormField */}
+          {/*               control={airtableForm.control} */}
+          {/*               name="view" */}
+          {/*               render={({ field }) => ( */}
+          {/*                 <FormItem className="my-[0.5rem]"> */}
+          {/*                   <FormLabel>View</FormLabel> */}
+          {/*                   <Select */}
+          {/*                     onValueChange={(value) => { */}
+          {/*                       console.log(value); */}
+          {/*                       field.onChange(value); */}
+          {/*                     }} */}
+          {/*                     defaultValue={field.value} */}
+          {/*                   > */}
+          {/*                     <SelectTrigger> */}
+          {/*                       <SelectValue placeholder="Select a table" /> */}
+          {/*                       <SelectContent className="bg-white"> */}
+          {/*                         <SelectGroup> */}
+          {/*                           {error ? ( */}
+          {/*                             <span>Error</span> */}
+          {/*                           ) : isPending ? ( */}
+          {/*                             <span>Loading...</span> */}
+          {/*                           ) : ( */}
+          {/*                             views.length > 0 && */}
+          {/*                             views.map((view) => ( */}
+          {/*                               <SelectItem */}
+          {/*                                 key={view.id} */}
+          {/*                                 value={view.id} */}
+          {/*                               > */}
+          {/*                                 {view.name} */}
+          {/*                               </SelectItem> */}
+          {/*                             )) */}
+          {/*                           )} */}
+          {/*                         </SelectGroup> */}
+          {/*                       </SelectContent> */}
+          {/*                     </SelectTrigger> */}
+          {/*                   </Select> */}
+          {/*                 </FormItem> */}
+          {/*               )} */}
+          {/*             /> */}
+          {/**/}
+          {/*             <Button */}
+          {/*               type="submit" */}
+          {/*               disabled={!createEnabled()} */}
+          {/*               onClick={() => { */}
+          {/*                 handleCreateDatasource(); */}
+          {/*               }} */}
+          {/*             > */}
+          {/*               Create */}
+          {/*             </Button> */}
+          {/*           </Form> */}
+          {/*         </div> */}
+          {/*       </PopoverContent> */}
+          {/*     </Popover> */}
+          {/*   </form> */}
+          {/* </Form> */}
+          <CiSquarePlus size="lg" />
+          {/* <AiOutlinePlus size="lg" /> */}
         </CardContent>
       </Card>
     </div>

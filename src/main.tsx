@@ -14,6 +14,7 @@ import { Navbar } from "./components/navigation/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
 import { DatasourceViewPage } from "./pages/DatasourceViewPage";
+import { ConfigureDatasourcePage } from "./pages/ConfigureDatasourcePage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   {
     path: "/database/:datasource/:id",
     element: <Protected component={DatasourceViewPage} />,
+  },
+  {
+    path: "/datasource/configure",
+    element: <Protected component={ConfigureDatasourcePage} />,
   },
 ]);
 
