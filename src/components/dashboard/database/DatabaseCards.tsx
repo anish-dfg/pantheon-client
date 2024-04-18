@@ -18,15 +18,18 @@ export const DatabaseCards = () => {
   });
 
   return (
-    <div className="flex gap-[2rem] m-[2rem]">
-      {isPending ? (
-        <h1>Loading</h1>
-      ) : error ? (
-        <h1>Error</h1>
-      ) : (
-        data && data.map((view) => <DatabaseCard key={view.id} data={view} />)
-      )}
-      {!isPending && <CreateDatabaseCard />}
+    <div className="flex flex-col gap-4 mt-[2rem] ml-[2rem]">
+      <h1 className="text-4xl font-bold font-['catamaran']">Databases</h1>
+      <div className="flex gap-[2rem] m-[1rem]">
+        {isPending ? (
+          <h1>Loading</h1>
+        ) : error ? (
+          <h1>Error</h1>
+        ) : (
+          data && data.map((view) => <DatabaseCard key={view.id} data={view} />)
+        )}
+        {!isPending && <CreateDatabaseCard />}
+      </div>
     </div>
   );
 };

@@ -36,7 +36,7 @@ export const DatabaseView = () => {
 
   const { id, datasource } = useParams();
   const { getAccessTokenSilently } = useAuth0();
-  const { isPending, data, error } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ["datasource"],
     queryFn: async () => {
       const token = await getAccessTokenSilently();

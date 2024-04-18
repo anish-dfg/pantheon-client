@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const { isAuthenticated, getIdTokenClaims, logout } = useAuth0();

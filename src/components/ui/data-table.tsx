@@ -36,17 +36,6 @@ import {
   SelectValue,
 } from "./select";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./sheet";
-import { Input } from "./input";
 
 export type GenericRecord = {
   [key: string]:
