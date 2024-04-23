@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
 import { DatasourceViewPage } from "./pages/DatasourceViewPage";
 import { ConfigureDatasourcePage } from "./pages/ConfigureDatasourcePage";
+import { ConfigureAirtableView } from "./pages/ConfigureAirtableView";
 
 const queryClient = new QueryClient();
 
@@ -32,12 +33,12 @@ const router = createBrowserRouter([
     element: <Protected component={UsersPage} />,
   },
   {
-    path: "/database/:datasource/:id",
-    element: <Protected component={DatasourceViewPage} />,
+    path: "/datasource/airtable/configure",
+    element: <Protected component={ConfigureAirtableView} />,
   },
   {
-    path: "/datasource/configure",
-    element: <Protected component={ConfigureDatasourcePage} />,
+    path: "/:datasource/:id",
+    element: <Protected component={DatasourceViewPage} />,
   },
 ]);
 

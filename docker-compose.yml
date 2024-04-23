@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  postgres:
+    hostname: pantheon-client
+    container_name: pantheon-client
+    build:
+      context: .
+    ports:
+      - "5173:5173"

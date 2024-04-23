@@ -7,7 +7,7 @@ export const DatabasePaginationButtonGroup = <T,>({
   table: Table<T>;
 }) => {
   return (
-    <div className="flex justify-end items-center py-4 space-x-2">
+    <div className="flex justify-between items-center py-4 space-x-2 w-full">
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.

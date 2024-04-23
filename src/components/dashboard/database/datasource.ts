@@ -7,7 +7,7 @@ export const DatasourceViewSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   viewName: z.string(),
-  datasourceName: z.string(),
+  datasource: z.string(),
   metadata: z.any(),
 });
 

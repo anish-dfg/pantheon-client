@@ -17,11 +17,18 @@ type DatabaseViewProps = {
 
 export const DatabaseCard = ({ data }: DatabaseViewProps) => {
   const navigate = useNavigate();
-  const { id, createdAt, updatedAt, viewName, datasourceName, description } =
-    data;
+  const {
+    id,
+    createdAt,
+    updatedAt,
+    viewName,
+    datasource,
+    description,
+    metadata,
+  } = data;
 
   const handleCardClick = () => {
-    navigate(`/database/${datasourceName}/${id}`);
+    navigate(`/${datasource.toLowerCase()}/${id}`);
   };
 
   return (
@@ -38,7 +45,12 @@ export const DatabaseCard = ({ data }: DatabaseViewProps) => {
       </CardHeader>
       <CardContent>
         <div className="flex gap-2">
-          <Badge className="text-white bg-purple-300">{datasourceName}</Badge>
+          <Badge className="text-white bg-purple-300">
+            {datasource.toLowerCase()}
+          </Badge>
+          {metadata.isUserTable && (
+            <Badge className="text-white bg-blue-600">users</Badge>
+          )}
           {new Date().getTime() - new Date(createdAt).getTime() <
             1000 * 60 * 60 * 24 * 3 && (
             <Badge className="text-white bg-pink-300">new</Badge>

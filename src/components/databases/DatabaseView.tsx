@@ -30,6 +30,12 @@ import {
 import { DatabasePaginationButtonGroup } from "./DatabasePaginationButtonGroup";
 import { DatabasePageSizeDropdown } from "./DatabasePageSizeDropdown";
 import { DatabaseActions } from "./DatabaseActions";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "../ui/resizable";
+import { ViewJobs } from "./jobs/ViewJobs";
 
 export const DatabaseView = () => {
   const [columns, setColumns] = useState<ColumnDef<GenericRecord>[]>([]);
@@ -73,6 +79,7 @@ export const DatabaseView = () => {
       ];
 
       setColumns(columns);
+      console.log(res.data);
 
       return res.data.records.map((rec: GenericRecord) => rec.fields);
     },
@@ -94,7 +101,7 @@ export const DatabaseView = () => {
     },
     initialState: {
       pagination: {
-        pageSize: 12,
+        pageSize: 14,
       },
     },
   });
@@ -103,79 +110,99 @@ export const DatabaseView = () => {
     return <div>Loading</div>;
   }
   return (
-    <div className="container flex flex-col mx-auto">
-      <div className="flex items-center py-4">
-        <DatabasePageSizeDropdown table={table} />
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="overflow-hidden cursor-pointer h-[1.5rem] w-[5rem]">
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
+    <ResizablePanelGroup
+      direction="horizontal"
+      // className="max-w-md rounded-lg border"
+    >
+      <ResizablePanel defaultSize={50}>
+        <div className="container flex flex-col mx-auto">
+          <div className="flex items-center py-4">
+            <DatabasePageSizeDropdown table={table} />
+          </div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
                               )}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="p-2 break-words bg-white shadow-md max-w-[12rem]">
-                              {JSON.stringify(
-                                cell.getContext().renderValue(),
-                              ).replace(/"/g, "")}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows?.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="overflow-hidden cursor-pointer h-[1.5rem] w-[5rem]">
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
+                                  )}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="p-2 break-words bg-white shadow-md max-w-[12rem]">
+                                  {JSON.stringify(
+                                    cell.getContext().renderValue(),
+                                  ).replace(/"/g, "")}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex justify-between align-middle">
-        <DatabaseActions table={table} />
-        <DatabasePaginationButtonGroup table={table} />
-      </div>
-    </div>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex justify-between align-middle">
+            <DatabasePaginationButtonGroup table={table} />
+          </div>
+        </div>
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel defaultSize={50}>
+        <ResizablePanelGroup direction="vertical">
+          <ResizablePanel defaultSize={25}>
+            <DatabaseActions table={table} viewId={id || ""} />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={75}>
+            <div className="container flex items-center h-full">
+              <ViewJobs datasourceViewId={id || ""} />
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 };

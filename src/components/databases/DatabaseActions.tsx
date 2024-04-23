@@ -1,22 +1,19 @@
 import { http } from "~/services/http";
-import { Button } from "../ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Table } from "@tanstack/react-table";
 import { GenericRecord } from "../ui/data-table";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Switch } from "../ui/switch";
 import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { ExportUsersAction } from "./actions/ExportUsersAction";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { ReimportDataAction } from "./actions/ReimportDataAction";
 
-export const DatabaseActions = ({ table }: { table: Table<GenericRecord> }) => {
+export const DatabaseActions = ({
+  table,
+  viewId,
+}: {
+  table: Table<GenericRecord>;
+  viewId: string;
+}) => {
   const { getAccessTokenSilently } = useAuth0();
 
   const [useBothFirstAndLastNames, setUseBothFirstAndLastNames] =
@@ -64,82 +61,38 @@ export const DatabaseActions = ({ table }: { table: Table<GenericRecord> }) => {
     console.log(res.status);
   };
   return (
-    <div className="flex py-4 h-full">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button>Export Users</Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-80 bg-white ml-[1rem]">
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium leading-none">Parameters</h4>
-              <p className="text-sm text-muted-foreground">
-                Define the email creation policy for the new users
-              </p>
-            </div>
-            <div className="grid gap-4">
-              <div className="flex gap-4 justify-between items-center">
-                <Label htmlFor="useBothFirstAndLastNames">
-                  Use Both First and Last Names?
-                </Label>
-                <Switch
-                  checked={useBothFirstAndLastNames}
-                  onCheckedChange={setUseBothFirstAndLastNames}
-                />
+    <div className="flex w-full h-full">
+      <div className="flex flex-col items-center mt-4 ml-5 w-full rounded-md border border-gray-200">
+        <h1 className="my-2 font-semibold text-center font">Actions</h1>
+        <div className="w-[90%]">
+          <Tabs defaultValue="export" className="w-full">
+            <TabsList className="grid grid-cols-2 gap-4 justify-between p-0">
+              <TabsTrigger
+                value="export"
+                className="text-blue-800 data-[state=active]:text-white data-[state=active]:bg-blue-800"
+              >
+                Export
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="import"
+                className="text-blue-800 data-[state=active]:text-white data-[state=active]:bg-blue-800"
+              >
+                Import
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="export">
+              <div className="grid grid-cols-2 gap-4 justify-between my-4 rounded-md">
+                <ExportUsersAction table={table} />
               </div>
-              <div className="flex gap-4 justify-between items-center">
-                <Label htmlFor="useBothFirstAndLastNames">
-                  Add unique numeric suffix?
-                </Label>
-                <Switch
-                  checked={addUniqueNumericSuffix}
-                  onCheckedChange={setAddUniqueNumericSuffix}
-                />
-              </div>
-              <div className="flex gap-4 justify-between items-center">
-                <Label htmlFor="separator">Email Names Separator</Label>
-                <Input
-                  id="separator"
-                  className="h-8 max-w-[5rem]"
-                  value={separator}
-                  placeholder="_"
-                  onChange={(e) => {
-                    setSeparator(e.target.value);
-                  }}
-                />
-              </div>
-              <div className="flex gap-4 justify-between items-center">
-                <Label htmlFor="separator">
-                  Change Password at Next Login?
-                </Label>
-                <Switch
-                  checked={changePasswordAtNextLogin}
-                  onCheckedChange={setChangePasswordAtNextLogin}
-                />
-              </div>
-              <div className="flex gap-4 justify-between items-center">
-                <Label>Password Length</Label>
-                <Select
-                  onValueChange={(v) => setGeneratedPasswordLength(parseInt(v))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="8" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="6">6</SelectItem>
-                    <SelectItem value="8">8</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="12">12</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-4 items-center ml-auto">
-                <Button onClick={handleExportUsers}>Export</Button>
-              </div>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+            </TabsContent>
+            <TabsContent value="import">
+              <ReimportDataAction id={viewId} />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 };
