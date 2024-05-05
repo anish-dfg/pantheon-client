@@ -114,7 +114,7 @@ export const DatabaseView = () => {
       direction="horizontal"
       // className="max-w-md rounded-lg border"
     >
-      <ResizablePanel defaultSize={50}>
+      <ResizablePanel defaultSize={70}>
         <div className="container flex flex-col mx-auto">
           <div className="flex items-center py-4">
             <DatabasePageSizeDropdown table={table} />
@@ -190,14 +190,14 @@ export const DatabaseView = () => {
         </div>
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel defaultSize={50}>
+      <ResizablePanel defaultSize={30}>
         <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={25}>
-            <DatabaseActions table={table} viewId={id || ""} />
+          <ResizablePanel defaultSize={50}>
+            <DatabaseActions table={table} viewId={id!} />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={75}>
-            <div className="container flex items-center h-full">
+          <ResizablePanel defaultSize={50}>
+            <div className="container flex items-center h-full mt-[1rem]">
               <ViewJobs datasourceViewId={id || ""} />
             </div>
           </ResizablePanel>

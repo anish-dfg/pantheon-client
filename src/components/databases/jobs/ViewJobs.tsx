@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { http } from "~/services/http";
 import { Job } from "./jobs";
 import { ViewJob } from "./ViewJob";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 export const ViewJobs = ({
   datasourceViewId,
@@ -21,16 +22,18 @@ export const ViewJobs = ({
   });
 
   return (
-    <div className="flex flex-col gap-4 p-6 mb-4 ml-5 w-full rounded-md border border-gray-200">
-      <div>
-        <h1 className="mb-1 font-semibold text-center">Jobs</h1>
-        <p className="text-sm">Jobs associated with this view</p>
+    <ScrollArea className="h-full">
+      <div className="flex flex-col gap-4 p-6 mb-4 ml-5 w-full rounded-md border border-gray-200">
+        <div>
+          <h1 className="mb-1 font-semibold text-center">Jobs</h1>
+          <p className="text-sm">Jobs associated with this view</p>
+        </div>
+        <div>
+          {!isPending &&
+            data &&
+            data.map((job) => <ViewJob key={job.id} job={job} />)}
+        </div>
       </div>
-      <div>
-        {!isPending &&
-          data &&
-          data.map((job) => <ViewJob key={job.id} job={job} />)}
-      </div>
-    </div>
+    </ScrollArea>
   );
 };
